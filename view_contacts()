@@ -1,0 +1,79 @@
+import csv
+import os
+
+# Path configuration
+DATA_FILE = "../data/contacts.csv"
+
+def initialize_file():
+    """Ensure the data directory and file exist."""
+    os.makedirs("../data", exist_ok=True)
+    if not os.path.exists(DATA_FILE):
+        with open(DATA_FILE, 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(["Name", "Phone", "Email"]) # Header
+
+def add_contact():
+    """CREATE: Append a new contact to the file."""
+    name = input("Enter Name: ")
+    phone = input("Enter Phone: ")
+    email = input("Enter Email: ")
+    try:
+        with open(DATA_FILE, 'a', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow([name, phone, email])
+        print("Contact saved successfully!")
+    except IOError as e:
+        print(f"File Error: Could not write to file. {e}")
+
+def view_contacts():
+    """READ: Display all contacts from the CSV file."""
+    try:
+        if not os.path.exists(DATA_FILE):
+            print("No contacts found. The file does not exist yet.")
+            return
+
+        with open(DATA_FILE, 'r') as f:
+            # Using csv.reader to handle the structured text
+            reader = csv.reader(f)
+            header = next(reader) # Extract the header row
+            
+            print(f"\n{'='*40}")
+            print(f"{header[0]:<15} {header[1]:<15} {header[2]:<15}")
+            print(f"{'-'*40}")
+            
+            count = 0
+            for row in reader:
+                print(f"{row[0]:<15} {row[1]:<15} {row[2]:<15}")
+                count += 1
+            
+            if count == 0:
+                print("The contact list is currently empty.")
+            print(f"{'='*40}\n")
+            
+    except FileNotFoundError:
+        print("Error: The data file was not found.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+def main():
+    initialize_file()
+    while True:
+        print("\n=== CONTACT MANAGER (READ/WRITE) ===")
+        print("1. Add Contact")
+        print("2. View All Contacts")
+        print("3. Exit")
+        
+        choice = input("Select an option: ")
+        
+        if choice == '1':
+            add_contact()
+        elif choice == '2':
+            view_contacts()
+        elif choice == '3':
+            print("Exiting...")
+            break
+        else:
+            print("Invalid choice! Try again.")
+
+if __name__ == "__main__":
+    main()
